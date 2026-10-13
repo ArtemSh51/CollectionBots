@@ -16,4 +16,14 @@ public class RobotStorage : MonoBehaviour
     {
         _robots.Add(robot);
     }
+
+    public void RemoveRobot(int index)
+    {
+        _robots.RemoveAt(index);
+    }
+
+    public void Clear()
+    {
+        _robots.Clear();
+    }
 }

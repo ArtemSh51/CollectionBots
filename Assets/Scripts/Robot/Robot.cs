@@ -8,15 +8,24 @@ public class Robot : MonoBehaviour
     [SerializeField] private ResourceRepository _resourceRepository;
     [SerializeField] private ResourceSpawner _spawner;
     [SerializeField] private RobotToucher _toucher;
+    [SerializeField] private Builder _builder;
     [SerializeField] private float _distanceToTownHall;
+    [SerializeField] private float _distanceToFlag;
 
     private Vector3 _currentResource;
 
     private NavMeshAgent _agent;
+    private Vector3 _flag;
 
     private bool _isBusy;
+    private bool _isFlagUp;
 
     public bool IsBusy => _isBusy;
+    public bool IsFlagUp => _isFlagUp;
+
+    public ResourceSpawner ResourceSpawner => _spawner;
+
+    public Vector3 Flag => _flag;
 
     private void Awake()
     {
@@ -33,11 +42,22 @@ public class Robot : MonoBehaviour
         {
             GoToTownHall();
         }
+
+        if (_isFlagUp && _isBusy == false && _resourceRepository.Count >= _builder.CostOfTownHall)
+        {
+            _agent.SetDestination(_flag);
+        }
     }
 
     public void SetBusy(bool isBusy)
     {
         _isBusy = isBusy;
+    }
+
+    public void SetFlagUp(bool isFalgUp, Vector3 flagPosition)
+    {
+        _isFlagUp = isFalgUp;
+        _flag = flagPosition;
     }
 
     public void SetTownHallTransform(Transform townHall)

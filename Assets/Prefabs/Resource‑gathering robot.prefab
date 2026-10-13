@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 1103539918887784538}
   - component: {fileID: 2366405845716562645}
   - component: {fileID: 4878855210219906375}
+  - component: {fileID: 7258706026055621058}
   m_Layer: 0
   m_Name: "Resource\u2011gathering robot"
   m_TagString: Untagged
@@ -32,7 +33,7 @@ Transform:
   m_GameObject: {fileID: 4386159449780112996}
   serializedVersion: 2
   m_LocalRotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.843363, y: 1.0699999, z: 13.188891}
+  m_LocalPosition: {x: 2.34, y: 1.07, z: -5.16}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -153,10 +154,10 @@ NavMeshAgent:
   m_AngularSpeed: 120
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
+  m_AutoBraking: 0
   m_AutoRepath: 1
   m_Height: 0.01791232
-  m_BaseOffset: 0.00895616
+  m_BaseOffset: 0.0056
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &2366405845716562645
@@ -175,7 +176,9 @@ MonoBehaviour:
   _resourceRepository: {fileID: 0}
   _spawner: {fileID: 0}
   _toucher: {fileID: 4878855210219906375}
+  _builder: {fileID: 7258706026055621058}
   _distanceToTownHall: 8
+  _distanceToFlag: 2
 --- !u!114 &4878855210219906375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,7 +193,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hand: {fileID: 1965943977815077650}
   _robot: {fileID: 2366405845716562645}
+--- !u!114 &7258706026055621058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4386159449780112996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10c5d505cf66b984da6cd5a1c97e0b3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _townHallPrefab: {fileID: 4511331010698738821, guid: 1be6424d29be1084da0e960f04e24030, type: 3}
   _resourceRepository: {fileID: 0}
+  _robotStorage: {fileID: 0}
+  _robot: {fileID: 2366405845716562645}
+  _costOfTownHall: 5
+  _countOfRobots: 1
+  _distanceFromRobotToFlag: 1
 --- !u!1 &8843569032116322293
 GameObject:
   m_ObjectHideFlags: 0

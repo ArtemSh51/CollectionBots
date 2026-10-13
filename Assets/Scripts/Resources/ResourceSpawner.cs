@@ -55,7 +55,6 @@ public class ResourceSpawner : MonoBehaviour
     private void ConfigureResourceAfterUse(Resource resource)
     {
         resource.gameObject.SetActive(false);
-
         resource.transform.position = Vector3.zero;
         resource.transform.rotation = Quaternion.identity;
     }
