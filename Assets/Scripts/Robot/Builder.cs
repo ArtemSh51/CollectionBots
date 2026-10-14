@@ -22,7 +22,7 @@ public class Builder : MonoBehaviour
         if (_resourceRepository.Count < _costOfTownHall) 
             return;
 
-        if (!_robot.IsFlagUp) 
+        if (_robot.IsFlagUp == false) 
             return;
 
         if (_robotStorage.Robots.Count <= _countOfRobots) 
