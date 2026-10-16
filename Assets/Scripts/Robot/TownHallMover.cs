@@ -15,7 +15,7 @@ public class TownHallMover : State
         _spawner = spawner;
         _distanceToTownHall = distanceToTownHall;
         _townHall = townHall;
-        
+
         if (_townHall.TryGetComponent(out ResourceWarehouse resourceWarehouse))
         {
             _resourceWarehouse = resourceWarehouse;
@@ -31,7 +31,7 @@ public class TownHallMover : State
     {
         if (Vector3.Distance(_robot.transform.position, _townHall.position) <= _distanceToTownHall)
         {
-            if (_resource.TryGetComponent(out Resource resource))
+            if (_resource != null && _resource.TryGetComponent(out Resource resource))
             {
                 _spawner.ReturnResource(resource);
                 _resourceWarehouse.AddResource(resource);
@@ -48,8 +48,22 @@ public class TownHallMover : State
         _resource = resource;
     }
 
+    public void SetSpawner(ResourceSpawner spawner)
+    {
+        _spawner = spawner;
+    }
+
     public void ReassignTownHall(Transform townHall)
     {
         _townHall = townHall;
+
+        if (_townHall != null && _townHall.TryGetComponent(out ResourceWarehouse resourceWarehouse))
+        {
+            _resourceWarehouse = resourceWarehouse;
+        }
+        else
+        {
+            _resourceWarehouse = null;
+        }
     }
 }

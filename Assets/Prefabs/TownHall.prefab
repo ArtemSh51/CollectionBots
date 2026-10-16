@@ -43,7 +43,6 @@ GameObject:
   - component: {fileID: 1805615563812358261}
   - component: {fileID: 410660297135773102}
   - component: {fileID: 2408688298230457606}
-  - component: {fileID: 4909128734775384220}
   - component: {fileID: 5935161762350162933}
   - component: {fileID: 1218574922576491030}
   - component: {fileID: 3264910400876599201}
@@ -141,20 +140,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.11616726, y: 0.052184764, z: 0.1528037}
   m_Center: {x: 0.0033914484, y: 0.012902183, z: 0.0006385669}
---- !u!114 &4909128734775384220
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5814955366736556830}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1567dba77232c0429faef5373b61718, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _radius: 100
-  _countOfResources: 50
 --- !u!114 &5935161762350162933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,4 +184,4 @@ MonoBehaviour:
   _robotPrice: 3
   _resourceSpawner: {fileID: 0}
   _townHallPrefab: {fileID: 7350250192656042814}
-  _townHallPrice: 0
+  _townHallPrice: 5

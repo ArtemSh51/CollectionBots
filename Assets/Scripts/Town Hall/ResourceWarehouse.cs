@@ -7,11 +7,6 @@ public class ResourceWarehouse : MonoBehaviour
 
     public int Count => _resourcesOfTownHall.Count;
 
-    private void Update()
-    {
-        Debug.Log(_resourcesOfTownHall.Count);
-    }
-
     public void AddResource(Resource resource)
     {
         _resourcesOfTownHall.Add(resource);

@@ -23,6 +23,18 @@ public class TaskDistributor : MonoBehaviour
 
     public void AddRobotWarehouse(RobotWarehouse robotWarehouse)
     {
-        _robotWarehouses.Add(robotWarehouse);
+        if (robotWarehouse == null)
+            return;
+
+        if (!_robotWarehouses.Contains(robotWarehouse))
+            _robotWarehouses.Add(robotWarehouse);
+    }
+
+    public void RemoveRobotWarehouse(RobotWarehouse robotWarehouse)
+    {
+        if (robotWarehouse == null)
+            return;
+
+        _robotWarehouses.Remove(robotWarehouse);
     }
 }

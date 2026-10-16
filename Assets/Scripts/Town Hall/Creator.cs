@@ -50,31 +50,38 @@ public class Creator : MonoBehaviour
 
     private void CreateTownHall()
     {
-        if (_flag.HasFlagTaken == true && transform.TryGetComponent(out ResourceWarehouse resourceWarehouse) 
-            && transform.TryGetComponent(out RobotWarehouse robots))
+        if (_flag.HasFlagTaken == true
+            && transform.TryGetComponent(out ResourceWarehouse resourceWarehouse)
+            && transform.TryGetComponent(out RobotWarehouse oldRobotWarehouse))
         {
-            if (resourceWarehouse.Count >= _townHallPrice && robots.Count >= 2)
+            if (resourceWarehouse.Count >= _townHallPrice && oldRobotWarehouse.Count >= 2)
             {
                 Buy(_townHallPrice);
 
                 Vector3 position = new Vector3(_flag.transform.position.x, 0.98f, _flag.transform.position.z);
 
-                _townHallPrefab = Instantiate(_townHallPrefab, position, Quaternion.identity);
+                Transform townHall = Instantiate(_townHallPrefab, position, Quaternion.identity);
 
-                Creator creator = _townHallPrefab.GetComponent<Creator>();
+                Creator creator = townHall.GetComponent<Creator>();
                 creator.SetFlag(_flag);
                 creator.SetResourceSpawner(_resourceSpawner);
 
-                RobotWarehouse robotWarehouseThis = transform.GetComponent<RobotWarehouse>();
-                Robot robot = robotWarehouseThis.Robots[robotWarehouseThis.Robots.Count - 1];
+                RobotWarehouse newRobotWarehouse = creator.GetComponent<RobotWarehouse>();
+                newRobotWarehouse.Clear();
+
+                Robot robot = oldRobotWarehouse.Robots[oldRobotWarehouse.Robots.Count - 1];
+
                 robot.TownHallMover.ReassignTownHall(creator.transform);
+                robot.SetTownHallTransform(creator.transform);
 
-                RobotWarehouse robotWarehouse = creator.GetComponent<RobotWarehouse>();
-                robotWarehouse.Clear();
-                robotWarehouse.AddRobot(robot);
+                oldRobotWarehouse.Remove(robot);
+                newRobotWarehouse.AddRobot(robot);
 
-                _resourceSpawner.GetComponent<TaskDistributor>().AddRobotWarehouse(creator.GetComponent<RobotWarehouse>());
-                robotWarehouseThis.Remove(robot);
+                if (_resourceSpawner.TryGetComponent(out TaskDistributor taskDistributor))
+                {
+                    taskDistributor.AddRobotWarehouse(newRobotWarehouse);
+                    taskDistributor.RemoveRobotWarehouse(oldRobotWarehouse);
+                }
 
                 _flag.gameObject.SetActive(false);
                 _flag.SetHasFlagTaken(false);

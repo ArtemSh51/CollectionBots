@@ -553,7 +553,7 @@ MonoBehaviour:
   _yPosition: 0.2
   _defaultCountOfResources: 3
   _maxSize: 6
-  _timeBetweenResourceCreation: 4
+  _timeBetweenResourceCreation: 3
 --- !u!114 &1430857838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -773,6 +773,10 @@ PrefabInstance:
       propertyPath: _townHall
       value: 
       objectReference: {fileID: 376140681}
+    - target: {fileID: 7008850509242630610, guid: dfa109e741b358d4997619c87a432003, type: 3}
+      propertyPath: _distanceToResource
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7140103991839307365, guid: dfa109e741b358d4997619c87a432003, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.02
@@ -817,6 +821,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Robot
       objectReference: {fileID: 0}
+    - target: {fileID: 7520288365973761247, guid: dfa109e741b358d4997619c87a432003, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -834,6 +842,14 @@ PrefabInstance:
       propertyPath: _flag
       value: 
       objectReference: {fileID: 1888568135}
+    - target: {fileID: 3264910400876599201, guid: 8bea2b26ec8961a428d624c439909161, type: 3}
+      propertyPath: _robotPrice
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3264910400876599201, guid: 8bea2b26ec8961a428d624c439909161, type: 3}
+      propertyPath: _townHallPrice
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3264910400876599201, guid: 8bea2b26ec8961a428d624c439909161, type: 3}
       propertyPath: _townHallPrefab
       value: 
@@ -890,7 +906,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 0}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

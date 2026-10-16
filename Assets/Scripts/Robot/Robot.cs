@@ -89,6 +89,9 @@ public class Robot : MonoBehaviour
     public void SetResourceSpawner(ResourceSpawner resourceSpawner)
     {
         _spawner = resourceSpawner;
+
+        if (TownHallMover != null)
+            TownHallMover.SetSpawner(resourceSpawner);
     }
 
     public void SetTownHallTransform(Transform townHall)
