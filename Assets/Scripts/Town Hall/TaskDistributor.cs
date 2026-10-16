@@ -1,24 +1,28 @@
-using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TaskDistributor : MonoBehaviour
 {
-    [SerializeField] private RobotStorage _robotStorage;
     [SerializeField] private ResourceScanner _resourceScanner;
+    [SerializeField] private List<RobotWarehouse> _robotWarehouses;
 
     private void Update()
     {
-        for (int i = 0; i < _resourceScanner.Resources.Count(); i++)
-        {
-            if (i == _resourceScanner.Resources.Count() - (_resourceScanner.Resources.Count() - _robotStorage.Robots.Count()))
-            {
-                break;
-            }
+        int j = 0;
 
-            if (_robotStorage.Robots[i].IsBusy == false)
+        for (int i = 0; i < _robotWarehouses.Count; i++)
+        {
+            int robotsCount = _robotWarehouses[i].Robots.Count;
+
+            for (int k = 0; k < robotsCount && j < _resourceScanner.ScannedResources.Count; k++, j++)
             {
-                _robotStorage.AddTask(i, _resourceScanner.GetPosition(i));
+                _robotWarehouses[i].AddTask(k, _resourceScanner.GetResourcePosition(j));
             }
         }
+    }
+
+    public void AddRobotWarehouse(RobotWarehouse robotWarehouse)
+    {
+        _robotWarehouses.Add(robotWarehouse);
     }
 }

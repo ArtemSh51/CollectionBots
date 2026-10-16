@@ -1,30 +1,35 @@
 using UnityEngine;
 
-public class RobotToucher : MonoBehaviour
+public class RobotToucher : State
 {
-    [SerializeField] private Transform _hand;
-    [SerializeField] private Robot _robot;
+    private Robot _robot;
+    private Transform _hand;
+    private Transform _resource;
 
-    public Resource Resource { get; private set; }
-
-    private void OnCollisionEnter(Collision collision)
+    public RobotToucher(Robot robot, Transform hand)
     {
-        if (collision.transform.TryGetComponent(out Resource resource) && _robot.IsBusy == false)
-        {
-            Resource = resource;
-
-            ConfigureResourceForChild(resource);
-
-            _robot.SetBusy(true);
-        }
+        _robot = robot;
+        _hand = hand;
     }
 
-    private void ConfigureResourceForChild(Resource resource)
+    public void SetResourcePosition(Transform resource)
     {
-        resource.transform.SetParent(_hand, true);
-        resource.transform.localPosition = Vector3.zero;
-        resource.transform.localRotation = Quaternion.identity;
-        resource.SetColliderEnabled(false);
-        resource.SetNavMeshObstacleEnambled(false);
+        _resource = resource;
+    }
+
+    public override void Enter()
+    {
+        _resource.transform.SetParent(_hand, true);
+        _resource.transform.localPosition = Vector3.zero;
+        _resource.transform.localRotation = Quaternion.identity;
+        
+        if (_resource.TryGetComponent(out Resource resource))
+        {
+            resource.SetColliderEnabled(false);
+            resource.SetNavMeshObstacleEnabled(false);
+        }
+
+        _robot.TownHallMover.SetResourcePosition(_resource);
+        _robot.StateMachine.ChangeState(_robot.TownHallMover);
     }
 }

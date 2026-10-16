@@ -2,42 +2,24 @@ using UnityEngine;
 
 public class Creator : MonoBehaviour
 {
-    [SerializeField] private Robot _robotPrefab;
     [SerializeField] private Transform _spawner;
-    [SerializeField] private Transform _townHall;
-    [SerializeField] private ResourceRepository _resourceRepository;
-    [SerializeField] private RobotStorage _storage;
+    [SerializeField] private Robot _robotPrefab;
+    [SerializeField] private Flag _flag;
+    [SerializeField] private int _robotPrice;
     [SerializeField] private ResourceSpawner _resourceSpawner;
-    [SerializeField] private int _costOfRobot;
 
-    [SerializeField] private InputReader _inputReader;
-    [SerializeField] private Transform _flagPrefab;
-
-    private Ray _ray;
-    private RaycastHit _hit;
-    private bool _isTownHallSelect;
-
-    private void OnEnable()
-    {
-        _inputReader.HighlightTownHallButtonPressed += HighlightTownHall;
-        _inputReader.FlagCreationButtonPressed += CreateFlag;
-    }
+    [SerializeField] private Transform _townHallPrefab;
+    [SerializeField] private int _townHallPrice;
 
     private void Update()
     {
-        _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (_resourceRepository.Count >= _costOfRobot && _storage.Robots[0].IsFlagUp == false)
-        {
-            Buy(_costOfRobot);
-            CreateRobot();
-        }  
+        CreateRobot();
+        CreateTownHall();
     }
 
-    private void OnDisable()
+    public void SetFlag(Flag flag)
     {
-        _inputReader.HighlightTownHallButtonPressed -= HighlightTownHall;
-        _inputReader.FlagCreationButtonPressed -= CreateFlag;
+        _flag = flag;
     }
 
     public void SetResourceSpawner(ResourceSpawner resourceSpawner)
@@ -45,57 +27,66 @@ public class Creator : MonoBehaviour
         _resourceSpawner = resourceSpawner;
     }
 
-    private void HighlightTownHall()
-    {
-        if (_isTownHallSelect == false && Physics.Raycast(_ray, out _hit) && _hit.collider.gameObject.TryGetComponent(out Creator creator))
-        {
-            _isTownHallSelect = true;
-        }
-    }
-
     private void CreateRobot()
     {
-        for (int i = 0; i < _storage.Robots.Count; i++)
+        if (_flag.gameObject.activeSelf == false && transform.TryGetComponent(out ResourceWarehouse resourceWarehouse))
         {
-            if (_storage.Robots[i].IsFlagUp)
+            if (resourceWarehouse.Count >= _robotPrice)
             {
-                return;
+                Buy(_robotPrice);
+
+                Robot newRobot = Instantiate(_robotPrefab, _spawner.position, Quaternion.identity);
+                newRobot.SetFlag(_flag);
+                newRobot.SetResourceSpawner(_resourceSpawner);
+                newRobot.SetTownHallTransform(transform);
+
+                if (newRobot.TownHallMover != null)
+                    newRobot.TownHallMover.ReassignTownHall(transform);
+
+                transform.GetComponent<RobotWarehouse>().AddRobot(newRobot);
             }
         }
-
-        Robot newRobot = Instantiate(_robotPrefab, _spawner.position, Quaternion.identity);
-
-        _storage.AddRobot(newRobot);
-
-        newRobot.SetResourceRepository(_resourceRepository);
-        newRobot.SetResourceSpawner(_resourceSpawner);
-        newRobot.SetTownHallTransform(_townHall);
-
-        Builder builder = newRobot.GetComponent<Builder>();
-
-        builder.SetResourceRepository(_resourceRepository);
-        builder.SetRobotStorage(_storage);
     }
 
-    private void CreateFlag()
+    private void CreateTownHall()
     {
-        if (_isTownHallSelect && Physics.Raycast(_ray, out _hit))
+        if (_flag.HasFlagTaken == true && transform.TryGetComponent(out ResourceWarehouse resourceWarehouse) 
+            && transform.TryGetComponent(out RobotWarehouse robots))
         {
-            Transform newFlag = Instantiate(_flagPrefab, _hit.point, Quaternion.identity);
+            if (resourceWarehouse.Count >= _townHallPrice && robots.Count >= 2)
+            {
+                Buy(_townHallPrice);
 
-            _isTownHallSelect = false;
+                Vector3 position = new Vector3(_flag.transform.position.x, 0.98f, _flag.transform.position.z);
 
-            _storage.Robots[0].SetFlagUp(true, newFlag.position);
+                _townHallPrefab = Instantiate(_townHallPrefab, position, Quaternion.identity);
+
+                Creator creator = _townHallPrefab.GetComponent<Creator>();
+                creator.SetFlag(_flag);
+                creator.SetResourceSpawner(_resourceSpawner);
+
+                RobotWarehouse robotWarehouseThis = transform.GetComponent<RobotWarehouse>();
+                Robot robot = robotWarehouseThis.Robots[robotWarehouseThis.Robots.Count - 1];
+                robot.TownHallMover.ReassignTownHall(creator.transform);
+
+                RobotWarehouse robotWarehouse = creator.GetComponent<RobotWarehouse>();
+                robotWarehouse.Clear();
+                robotWarehouse.AddRobot(robot);
+
+                _resourceSpawner.GetComponent<TaskDistributor>().AddRobotWarehouse(creator.GetComponent<RobotWarehouse>());
+                robotWarehouseThis.Remove(robot);
+
+                _flag.gameObject.SetActive(false);
+                _flag.SetHasFlagTaken(false);
+            }
         }
     }
 
-    private void Buy(int amount)
+    private void Buy(int price)
     {
-        int count = Mathf.Min(amount, _resourceRepository.Count);
-
-        for (int i = 0; i < count; i++)
+        for (int i = price - 1; i >= 0; i--)
         {
-            _resourceRepository.RemoveResource(0);
+            transform.GetComponent<ResourceWarehouse>().RemoveAt(i);
         }
     }
 }

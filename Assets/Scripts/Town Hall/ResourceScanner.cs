@@ -1,52 +1,38 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ResourceScanner : MonoBehaviour
 {
     [SerializeField] private float _radius;
-    [SerializeField] private int _countOfColliders;
-
-    [SerializeField] private float _timeBetweenListUpdates;
+    [SerializeField] private int _countOfResources;
 
     private Collider[] _colliders;
-    private List<Resource> _resources = new List<Resource>();
+    private List<Resource> _scannedResources = new List<Resource>();
 
-    private bool _canListUpdated = true;
-
-    public IReadOnlyList<Resource> Resources => _resources;
+    public IReadOnlyList<Resource> ScannedResources => _scannedResources;
 
     private void Awake()
     {
-        _colliders = new Collider[_countOfColliders];
-
-        StartCoroutine(ScanResources());
+        _colliders = new Collider[_countOfResources];
     }
 
-    private IEnumerator ScanResources()
+    private void Update()
     {
-        WaitForSeconds wait = new WaitForSeconds(_timeBetweenListUpdates);
+        _scannedResources.Clear();
 
-        while (_canListUpdated)
+        int count = Physics.OverlapSphereNonAlloc(transform.position, _radius, _colliders);
+
+        for (int i = 0; i < count; i++)
         {
-            _resources.Clear();
-
-            int count = Physics.OverlapSphereNonAlloc(transform.position, _radius, _colliders);
-
-            for (int i = 0; i < count; i++)
+            if (_colliders[i].TryGetComponent(out Resource resource))
             {
-                if (_colliders[i].TryGetComponent(out Resource resource))
-                {
-                    _resources.Add(resource);
-                }
+                _scannedResources.Add(resource);
             }
-
-            yield return wait;
         }
     }
 
-    public Vector3 GetPosition(int index)
+    public Transform GetResourcePosition(int index)
     {
-        return _resources[index].transform.position;
+        return _scannedResources[index].transform;
     }
 }

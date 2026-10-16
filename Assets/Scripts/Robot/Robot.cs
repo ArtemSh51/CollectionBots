@@ -4,70 +4,86 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class Robot : MonoBehaviour
 {
+    [SerializeField] private Transform _hand;
     [SerializeField] private Transform _townHall;
-    [SerializeField] private ResourceRepository _resourceRepository;
     [SerializeField] private ResourceSpawner _spawner;
-    [SerializeField] private RobotToucher _toucher;
-    [SerializeField] private Builder _builder;
+    [SerializeField] private float _distanceToResource;
     [SerializeField] private float _distanceToTownHall;
     [SerializeField] private float _distanceToFlag;
+    [SerializeField] private Flag _flag;
 
-    private Vector3 _currentResource;
-
+    private Transform _resource;
     private NavMeshAgent _agent;
-    private Vector3 _flag;
+    private bool _hasResource;
 
-    private bool _isBusy;
-    private bool _isFlagUp;
+    public StateMachine StateMachine { get; private set; }
 
-    public bool IsBusy => _isBusy;
-    public bool IsFlagUp => _isFlagUp;
+    public RobotMover RobotMover { get; private set; }
 
-    public ResourceSpawner ResourceSpawner => _spawner;
+    public RobotToucher RobotToucher { get; private set; }
 
-    public Vector3 Flag => _flag;
+    public TownHallMover TownHallMover { get; private set; }
 
-    private void Awake()
+    public FlagMover FlagMover { get; private set; }
+
+    private void Start()
     {
+        _flag.Appeared += SetFlagTransform;
+
         _agent = GetComponent<NavMeshAgent>();
+
+        StateMachine = new StateMachine();
+        RobotMover = new RobotMover(this, _distanceToResource, _flag);
+        RobotToucher = new RobotToucher(this, _hand);
+        TownHallMover = new TownHallMover(this, _spawner, _distanceToTownHall, _townHall);
+        FlagMover = new FlagMover(this, _distanceToFlag);
     }
 
     private void Update()
     {
-        if (_isBusy == false)
+        StateMachine.Update();
+    }
+
+    private void OnDisable()
+    {
+        _flag.Appeared -= SetFlagTransform;
+    }
+
+    private void SetFlagTransform(Flag flag)
+    {
+        FlagMover.SetFlagTransform(flag);
+    }
+
+    public void SetResorcePosition(Transform resource)
+    {
+        if (RobotMover == null)
+            return;
+
+        _resource = resource;
+
+        if (_hasResource == false)
         {
-            _agent.SetDestination(_currentResource);
-        }
-        else if (_isBusy == true)
-        {
-            GoToTownHall();
-        }
+            RobotMover.SetResourcePosition(_resource);
 
-        if (_isFlagUp && _isBusy == false && _resourceRepository.Count >= _builder.CostOfTownHall)
-        {
-            _agent.SetDestination(_flag);
+            StateMachine.ChangeState(RobotMover);
+
+            _hasResource = true;
         }
     }
 
-    public void SetBusy(bool isBusy)
+    public void SetHasResource(bool isReceivedResources)
     {
-        _isBusy = isBusy;
+        _hasResource = isReceivedResources;
     }
 
-    public void SetFlagUp(bool isFalgUp, Vector3 flagPosition)
+    public NavMeshAgent GetNavMeshAgent()
     {
-        _isFlagUp = isFalgUp;
-        _flag = flagPosition;
+        return _agent;
     }
 
-    public void SetTownHallTransform(Transform townHall)
+    public void SetFlag(Flag flag)
     {
-        _townHall = townHall;
-    }
-
-    public void SetResourceRepository(ResourceRepository resourceRepository)
-    {
-        _resourceRepository = resourceRepository;
+        _flag = flag;
     }
 
     public void SetResourceSpawner(ResourceSpawner resourceSpawner)
@@ -75,24 +91,8 @@ public class Robot : MonoBehaviour
         _spawner = resourceSpawner;
     }
 
-    public void Move(Vector3 resource)
+    public void SetTownHallTransform(Transform townHall)
     {
-        _currentResource = resource;
-    }
-
-    private void GoToTownHall()
-    {
-        _agent.SetDestination(_townHall.position);
-
-        if (Vector3.Distance(transform.position, _townHall.position) <= _distanceToTownHall)
-        {
-            _isBusy = false;
-
-            _spawner.ReturnResource(_toucher.Resource);
-
-            _resourceRepository.AddResource(_toucher.Resource);
-
-            _toucher.Resource.transform.parent = null;
-        }
+        _townHall = townHall;
     }
 }
